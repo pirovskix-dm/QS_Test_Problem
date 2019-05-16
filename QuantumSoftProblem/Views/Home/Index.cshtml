@@ -1,0 +1,268 @@
+﻿@model QuantumSoftProblem.Models.ViewModel
+@{
+	ViewBag.Title = "Home Page";
+}
+
+@helper ShowCacheTree(IEnumerable<QuantumSoftProblem.QuantumSoft.Cache.CacheNode> nodes)
+{
+	<ul>
+		@foreach (var n in nodes)
+		{
+			<li>
+				@if (n.IsActive)
+				{
+					<div data-key="@n.Key" data-value="@n.Value" class="cache_node node  @(n.IsNew() ? "new_node": "")">@n.Value</div>
+				}
+				else
+				{
+					<div class="removed_node">@n.Value</div>
+				}
+
+				@if (n.ChildeNodes.Any())
+				{
+					@ShowCacheTree(n.ChildeNodes)
+				}
+			</li>
+		}
+	</ul>
+}
+
+@helper ShowDbTree(IEnumerable<QuantumSoftProblem.QuantumSoft.DataBase.Record> records)
+{
+	<ul>
+		@foreach (var r in records)
+		{
+			<li>
+				@if (r.IsActive)
+				{
+					<div data-id="@r.Id" data-value="@r.Value" class="db_node node">@r.Value</div>
+				}
+				else
+				{
+					<div class="removed_node">@r.Value</div>
+				}
+
+				@{ var childes = Model.Records.Where(rec => rec.ParentId == r.Id);}
+				@if (childes.Any())
+				{
+					@ShowDbTree(childes)
+				}
+			</li>
+		}
+	</ul>
+}
+
+<div class="general_class">
+
+	<div class="tree_view">
+		@ShowCacheTree(Model.Roots)
+	</div>
+
+	<button class="get_button"><<</button>
+
+	<div class="tree_view">
+		<ul>
+			@{ var rootRec = Model.Records.First(r => r.ParentId == 0); }
+			<li>
+				<div data-id="@rootRec.Id" data-value="@rootRec.Value" class="db_node node">@rootRec.Value</div>
+				@{ var childes = Model.Records.Where(rec => rec.ParentId == rootRec.Id);}
+				@ShowDbTree(childes)
+			</li>
+		</ul>
+	</div>
+
+	<div style="clear: both;"></div>
+</div>
+
+<div class="buttons">
+	<input type="text" class="value_input" value="" />
+	<button class="add_button">+</button>
+	<button class="delete_button">-</button>
+	<button class="alter_button">a</button>
+	<button class="apply_button">Apply</button>
+	<button class="reset_button">Reset</button>
+</div>
+
+
+@section scripts
+{
+	<script>
+		$(document).ready(function () {
+			var _key = 0;
+			var _id = 0;
+
+			handleMouseHover();
+
+			handleTreeClick(function (key, value) {
+				$('.value_input').val(value);
+				_key = key;
+			});
+
+			handleDbClick(function (id) {
+				_id = id;
+			});
+
+			$('.add_button').click(function (e) {
+				var _value = $('.value_input').val().trim();
+				sendAddRequest(_key, _value);
+			});
+
+			$('.delete_button').click(function (e) {
+				sendDeleteRequest(_key);
+			});
+
+			$('.alter_button').click(function (e) {
+				var _value = $('.value_input').val().trim();
+				sendAlterRequest(_key, _value);
+			});
+
+			$('.reset_button').click(function (e) {
+				sendResetReques();
+			});
+
+			$('.get_button').click(function (e) {
+				sendMoveReques(_id);
+			});
+
+			$('.apply_button').click(function (e) {
+				sendApplyReques();
+			});
+		});
+
+		var sendAddRequest = function (key, value) {
+			$.ajax({ url: `/Home/AddNode?key=${key}&value=${value}` }).done(function () { location.reload(); });
+		};
+
+		var sendDeleteRequest = function (key) {
+			$.ajax({ url: `/Home/DeleteNode?key=${key}` }).done(function () { location.reload(); });
+		};
+
+		var sendAlterRequest = function (key, value) {
+			$.ajax({ url: `/Home/AlterNode?key=${key}&value=${value}` }).done(function () { location.reload(); });
+		};
+
+		var sendResetReques = function () {
+			$.ajax({ url: `/Home/ResetNodes` }).done(function () { location.reload(); });
+		}
+
+		var sendMoveReques = function (id) {
+			$.ajax({ url: `/Home/MoveNodes?id=${id}` }).done(function () { location.reload(); });
+		}
+
+		var sendApplyReques = function (id) {
+			$.ajax({ url: `/Home/ApplyChanges` }).done(function () { location.reload(); });
+		}
+
+		var handleTreeClick = function (callback) {
+			$('.cache_node').click(function (e) {
+				var scope = $(this);
+
+				e.stopPropagation();
+				highlightClick(scope)
+				var key = scope.data('key');
+				var value = scope.data('value');
+				callback(key, value);
+			});
+		};
+
+		var handleDbClick = function (callback) {
+			$('.db_node').click(function (e) {
+				var scope = $(this);
+
+				e.stopPropagation();
+				highlightClick(scope)
+				var key = scope.data('id');
+				callback(key);
+			});
+		};
+
+		var handleMouseHover = function () {
+			$('.node').mouseover(function (e) {
+				e.stopPropagation();
+				$('.node').removeClass('currentHover');
+				$(this).addClass('currentHover');
+			});
+
+			$('.node').mouseout(function () {
+				$(this).removeClass('currentHover');
+			});
+		};
+
+		var highlightClick = function (jEl) {
+			$('.node').removeClass('clicked');
+			jEl.addClass('clicked');
+		};
+
+	</script>
+}
+
+<style>
+
+	.general_class {
+		width: 100%;
+		margin-top: 50px;
+		display: flex;
+	}
+
+	.tree_view {
+		width: 30%;
+		border: 2px solid #808080;
+		float: left;
+		margin: 10px;
+	}
+
+	.get_button {
+		align-self: center;
+	}
+
+	ul {
+		list-style-type: none;
+		padding: 0;
+		padding-left: 15px;
+	}
+
+	.buttons {
+		margin: 10px;
+		width: 100%;
+	}
+
+	.node {
+		cursor: pointer;
+		user-select: none;
+		width: fit-content;
+		border: 2px solid transparent;
+	}
+
+	.removed_node {
+		background-color: yellow;
+		user-select: none;
+		width: fit-content;
+	}
+
+	.new_node {
+		background-color: #c4eef7;
+		user-select: none;
+		width: fit-content;
+	}
+
+	li {
+		user-select: none;
+		padding: 0;
+	}
+
+	.currentHover {
+		border: 2px solid #636363;
+	}
+
+	.clicked {
+		background-color: #acacac;
+	}
+
+	li.currentHover ul {
+		background-color: white;
+	}
+
+	li.clicked ul {
+		background-color: white;
+	}
+</style>
