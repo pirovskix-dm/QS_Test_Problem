@@ -188,7 +188,11 @@ namespace QuantumSoftProblem.QuantumSoft.Cache
 			{
 				parent.Add(c);
 				c.Parent = parent;
-				c.IsActive = parent.IsActive;
+
+				if (!parent.IsActive)
+				{
+					c.Remove();
+				}
 			}
 		}
 	}

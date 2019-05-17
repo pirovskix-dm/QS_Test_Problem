@@ -62,12 +62,8 @@
 
 	<div class="tree_view">
 		<ul>
-			@{ var rootRec = Model.Records.First(r => r.ParentId == 0); }
-			<li>
-				<div data-id="@rootRec.Id" data-value="@rootRec.Value" class="db_node node">@rootRec.Value</div>
-				@{ var childes = Model.Records.Where(rec => rec.ParentId == rootRec.Id);}
-				@ShowDbTree(childes)
-			</li>
+			@{ var rootRec = Model.Records.Where(r => r.ParentId == 0); }
+			@ShowDbTree(rootRec)
 		</ul>
 	</div>
 
