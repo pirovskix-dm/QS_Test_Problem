@@ -10,6 +10,7 @@ namespace QuantumSoftProblem.QuantumSoft.Cache
 		public IEnumerable<CacheNode> Roots => GetRootNodes(); // Ноды у которых нет родительских нодов
 		public HashSet<CacheNode> Changes { get; private set; } // Отслеживание измененных нодов
 		public List<CacheNode> Deletions { get; private set; } // Отслеживание удалений
+		public IEnumerable<CacheNode> Records => GetRecords();
 
 		private int currentKey = 0;
 		private readonly Dictionary<int, CacheNode> cached; // индексированный сет всех нодов для быстрого поиска и доступа
@@ -175,6 +176,11 @@ namespace QuantumSoftProblem.QuantumSoft.Cache
 		private IEnumerable<CacheNode> GetRootNodes()
 		{
 			return cached.Where(n => n.Value.Parent == null).Select(n => n.Value);
+		}
+
+		private IEnumerable<CacheNode> GetRecords()
+		{
+			return records.Select(n => n.Value);
 		}
 
 		/// <summary>

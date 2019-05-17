@@ -77,6 +77,7 @@ namespace QuantumSoftProblem.Controllers
 				var cacheService = new CacheService(DbContext, CacheTree);
 				cacheService.DeployChanges();
 				cacheService.DeployDeletions();
+				cacheService.CheckRelevance();
 				cacheService.Reset();
 			}
 			catch (Exception ex)

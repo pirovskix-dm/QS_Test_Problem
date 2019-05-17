@@ -77,6 +77,18 @@ namespace QuantumSoftProblem.QuantumSoft.Cache
 			}
 		}
 
+		public void CheckRelevance()
+		{
+			foreach(CacheNode node in cache.Records)
+			{
+				Record record = dbContext.GetRecord(node.Record.Id);
+				if (node.IsActive && record?.IsActive != true)
+				{
+					node.Remove();
+				}
+			}
+		}
+
 		public void Reset()
 		{
 			// Сбрасываю отслеживание изменений в кеше
