@@ -40,10 +40,19 @@ namespace QuantumSoftProblem.QuantumSoft.Cache
 
 			foreach(CacheNode node in cache.Changes)
 			{
-				// Обновляю запись
-				dbContext.UpdateRecord(node.Record.Id, node.Value);
-				// Рекурсивно добавляю новые дочерние ноды в базу
-				AddNewRecords(node.NewNodes, node.Record.Id);
+				// Обновляю запись если таковая есть
+				Record record = dbContext.UpdateRecord(node.Record.Id, node.Value);
+
+				// Если запись была удалена до обновления
+				node.IsActive = record?.IsActive ?? false;
+
+				if (record != null)
+				{
+					// Рекурсивно добавляю новые дочерние ноды в базу
+					AddNewRecords(node.NewNodes, node.Record.Id);
+				}
+
+
 				// Сбрасываю отслеживание изменений в ноде
 				node.Reset();
 			}

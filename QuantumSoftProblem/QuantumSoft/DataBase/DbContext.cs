@@ -59,17 +59,19 @@ namespace QuantumSoftProblem.QuantumSoft.DataBase
 			records.Add(record);
 		}
 
-		public void UpdateRecord(int id, string value)
+		public Record UpdateRecord(int id, string value)
 		{
-			Record r = GetRecord(id);
-			if (r != null)
+			Record record = GetRecord(id);
+			if (record != null)
 			{
-				r.Value = value ?? string.Empty;
+				record.Value = value ?? string.Empty;
 			}
 			else
 			{
 				DebugUtils.WriteLine($"There is no record with {id} id");
+				return null;
 			}
+			return record;
 		}
 
 		public void DeleteRecord(int id)

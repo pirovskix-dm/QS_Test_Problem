@@ -34,6 +34,7 @@ namespace QuantumSoftProblem.Controllers
 			catch (Exception ex)
 			{
 				DebugUtils.WriteException(ex);
+				SessionManager.ClearSession();
 			}
 			return RedirectToAction("Index");
 		}
@@ -48,6 +49,7 @@ namespace QuantumSoftProblem.Controllers
 			catch (Exception ex)
 			{
 				DebugUtils.WriteException(ex);
+				SessionManager.ClearSession();
 			}
 			return RedirectToAction("Index");
 		}
@@ -62,6 +64,7 @@ namespace QuantumSoftProblem.Controllers
 			catch (Exception ex)
 			{
 				DebugUtils.WriteException(ex);
+				SessionManager.ClearSession();
 			}
 			return RedirectToAction("Index");
 		}
@@ -79,6 +82,7 @@ namespace QuantumSoftProblem.Controllers
 			catch (Exception ex)
 			{
 				DebugUtils.WriteException(ex);
+				SessionManager.ClearSession();
 			}
 			return RedirectToAction("Index");
 		}
@@ -94,6 +98,7 @@ namespace QuantumSoftProblem.Controllers
 			catch (Exception ex)
 			{
 				DebugUtils.WriteException(ex);
+				SessionManager.ClearSession();
 			}
 			return RedirectToAction("Index");
 		}
